@@ -40,10 +40,42 @@ from time import *
 import pandas as pd
 import shutil
 import os
+import xlsxwriter
 
-
+global months
 global link_to_repos
 global old_link
+
+months = {
+    1: 'Январь',
+    2: 'Февраль',
+    3: 'Март',
+    4: 'Апрель',
+    5: 'Май',
+    6: 'Июнь',
+    7: 'Июль',
+    8: 'Август',
+    9: 'Сентябрь',
+    10: 'Октябрь',
+    11: 'Ноябрь',
+    12: 'Декабрь'
+}
+
+months_abb = {
+    1: 'Янв',
+    2: 'Фев',
+    3: 'Мар',
+    4: 'Апр',
+    5: 'Май',
+    6: 'Июн',
+    7: 'Июл',
+    8: 'Авг',
+    9: 'Сен',
+    10: 'Окт',
+    11: 'Ноя',
+    12: 'Дек'
+}
+
 def main():
     # Внешняя оболочка программы
     set_appearance_mode('dark')
@@ -52,7 +84,7 @@ def main():
     root = CTk()
     root.title('Формирование остатков')
     root.geometry('450x450')
-
+    # Всплывающие окна-уведомления
     def show_popup(name, message):
         popup = CTkToplevel(root)
 
@@ -64,9 +96,8 @@ def main():
         btn = CTkButton(popup, text="OK", command=popup.destroy)
         btn.pack(side='bottom', anchor='center', padx=6, pady=6)
 
-        popup.lift()
-
     def get_link():
+        # Получение ссылки из формы
         global link_to_repos
         global old_link
         try:
@@ -92,6 +123,7 @@ def main():
             print('Сообщение об ошибке ', e)
 
     def faq_show():
+        # Показ окна с инстуркцией и описание программы
         def scroll_text(event):
             label.yview_scroll(-1*(event.delta),'units')
 
@@ -111,20 +143,17 @@ def main():
         popup.mainloop()
         
 
-    months = {
-        1: 'Январь',
-        2: 'Февраль',
-        3: 'Март',
-        4: 'Апрель',
-        5: 'Май',
-        6: 'Июнь',
-        7: 'Июль',
-        8: 'Август',
-        9: 'Сентябрь',
-        10: 'Октябрь',
-        11: 'Ноябрь',
-        12: 'Декабрь'
-    }
+    def get_remnant():
+        try:
+            show_popup('Успешно', 'Выгрузка остатков выполнена успешно, продолжайте работу')
+        except:
+            show_popup('Ошибка','Произошла неизвестная ошибка, попробуйте выгрузить самостоятельно')
+
+    def get_sales():
+        try:
+            show_popup('Успешно', 'Выгрузка продаж выполнена успешно, продолжайте работу')
+        except:
+            show_popup('Ошибка','Произошла неизвестная ошибка, попробуйте выгрузить самостоятельно')
 
 
     label_entry = CTkLabel(root, text="""Введите новый путь к папке, если ссылка по умолчанию некорректна
@@ -136,15 +165,25 @@ def main():
     entry.pack(anchor=NW, padx=8, pady=8)
 
 
-    btn = CTkButton(root, text='Подтвердить', command=get_link, width=60)
-    btn.pack(anchor=NW, padx=6, pady=6, fill='x')
+    btn = CTkButton(root, text='Подтвердить ссылку', command=get_link, width=60)
+    btn.pack(anchor=NW, padx=6, pady=6)
 
+    btn = CTkButton(root, text='Сформировать массив остатков', command=get_remnant, width=60)
+    btn.pack(anchor=NW, padx=6, pady=6)
+
+    btn = CTkButton(root, text='Сформировать массив продаж', command=get_sales, width=60)
+    btn.pack(anchor=NW, padx=6, pady=6)
+
+    btn = CTkButton(root, text='Подговить фабричный прогноз для подклейки', command=update_glay, width=60)
+    btn.pack(anchor=NW, padx=6, pady=6)
 
     btn = CTkButton(root, text='Начать формирование Остатков', command=start_form, width=60)
-    btn.pack(side='bottom', padx=6, pady= 40, )
+    btn.pack(side='bottom', padx=6, pady= 40 )
 
-    btn = CTkButton(root, text='?', command=faq_show, corner_radius=50, width=4)
+
+    btn = CTkButton(root, text='?', command=faq_show, corner_radius=50, width=2)
     btn.place(relx=1.0, rely=1.0, anchor='se')
+
 
     root.mainloop()
 
@@ -170,7 +209,7 @@ def copy_files():
     startP = time()
     global remnant_ago
     global sales_ago 
-    global glay
+    # global glay
     global prod_line
 
     # Копирование файла с прошлой недели в настоящую
@@ -181,7 +220,7 @@ def copy_files():
     # Объявление файлов
     remnant_ago = pd.read_excel(f'{link_to_repos}\\Остаток на {now_date}.xlsx', sheet_name=f'Остатки {one_week_ago}')
     sales_ago = pd.read_excel(f'{link_to_repos}\\Остаток на {now_date}.xlsx', sheet_name=f'Продажи {one_week_ago}')
-    glay = pd.read_excel(f'{link_to_repos}\\Остаток на {now_date}.xlsx', sheet_name='Подклеить')
+    # glay = pd.read_excel(f'{link_to_repos}\\Остаток на {now_date}.xlsx', sheet_name='Подклеить')
     prod_line = pd.read_excel(f'{link_to_repos}\\Остаток на {now_date}.xlsx', sheet_name='Линии')
 
     print('программа выполнялась ' + str(time() - startP))
@@ -317,7 +356,7 @@ def filling_cells_sales():
     sales['признак доп'] = sales['признак доп'].apply(lambda x: 'в накладных') 
 
     sales = sales.apply(update_sign_main, axis = 1)
-    new_sales = sales.drop(['Код', 'Клиент для аналитики.Регион продаж', 'Клиент для аналитики.Канал сбыта главный', 'Клиент для аналитики.Группа дистрибьютеров', 'Код.1', 'Номенклатура.Тип фасовки', 'Декабрь 2023', 'Итого'], axis=1)
+    new_sales = sales.drop(['Код', 'Клиент для аналитики.Регион продаж', 'Клиент для аналитики.Канал сбыта главный', 'Клиент для аналитики.Группа дистрибьютеров', 'Код.1', 'Номенклатура.Тип фасовки', f'{months[datetime.now().month]} {datetime.now().year}', f'{months[datetime.now().month + 6]} {datetime.now().year}', 'Итого'], axis=1)
     
     # Приравниваем названия столбцов к тем, что нам нужны
     new_sales.columns = remnant.columns
@@ -395,6 +434,37 @@ def normals():
     print('программа выполнялась ' + str(time() - startP))
     
 
+def update_glay():
+    global glay
+    date_day = datetime.now().day
+    date_month = datetime.now().month
+
+    # df = pd.read_excel(f'Остаток на {date_day}.{date_month}.xlsx', sheet_name=f'Остаток на {date_day}.{date_month}')
+    df = pd.read_excel(f'Остаток на 25.12.xlsx', sheet_name='Остатки 25.12') # Раскоментить при запуске
+
+    # forecast = pd.read_excel(f'Остаток на {date_day}.{date_month}.xlsx', sheet_name=f'прогноз м1')
+    forecast = pd.read_excel(f'Остаток на 25.12.xlsx', sheet_name='прогноз м1') # Раскоментить при запуске
+
+    glay = pd.DataFrame(columns = df.columns)
+
+
+    # Добавляет столбцы на основе фабричного прогноза
+    tuple_glay = [['признак основной', 'канал сбыта'], ['Brand SKU', 'Brand'], ['прогноз на месяц', f'Прогноз 2023 {months_abb[date_month]}'],
+                ['цех', 'цех'], ['Линия производства с приоритета1', 'Линия производства с приоритета1'], 
+                ['взаимозаменяемость линии', 'взаимозаменяемость линии'], ['площадка производства', 'Площадка']]
+
+    for i in tuple_glay:
+        glay[i[0]] = forecast[i[1]]
+
+    glay = glay[glay['прогноз на месяц'].notna()]
+    glay = glay[glay['прогноз на месяц'] != 0]
+
+    # Удаляет остатки из фабричного прогноза
+    df = df[df['признак доп'].notna()]
+
+    # print(glay)
+    
+
 def integrate():
     # Создание файлов для дальнейшей работы
     startP = time()
@@ -402,9 +472,9 @@ def integrate():
     global remnant
     global now_date
 
-    with pd.ExcelWriter(f'{link_to_repos}\\Остаток на {now_date}.xlsx', mode='a', if_sheet_exists='new') as excel_writer:    
-        remnant.to_excel(excel_writer, sheet_name=f'Остатки {now_date}')
-        sales.to_excel(excel_writer, sheet_name=f'Продажи {now_date}')
+    # with pd.ExcelWriter(f'{link_to_repos}\\Остаток на {now_date}.xlsx', mode='a', if_sheet_exists='new') as excel_writer:    
+    remnant.to_excel(f'{link_to_repos}\\Remnant.xlsx', sheet_name=f'Остатки {now_date}', index=False)
+    sales.to_excel(f'{link_to_repos}\\Sales.xlsx', sheet_name=f'Продажи {now_date}', index=False)
 
     print('программа выполнялась ' + str(time() - startP))
 
