@@ -9,14 +9,14 @@
 <h3> passGen.py </h3>
 <p> This sctipt generate <b>N</b> quantity passwords <b>M</b> characters long. You choise to use in password digits, uppercase, lowercase, punctiation and ambiguous characters </p><br>
 <h3> spaceShooter.py </h3>
-<p> not a finished project, subject to improvement</p>
+<p> not a finished project, subject to improvement</p> <br>
 <h3> qrcode.py </h3>
-<p> This code generate qrcode in "svg" pic </p>
+<p> This code generate qrcode in "svg" pic </p> <br> 
 <h3> remnant_scrtipt.py </h3>
-<p> Very large file for generage remnant as report </p>
+<p> Very large file for generage remnant as report </p> <br>
 <h3> remnant.py </h3>
-<p> simplest remnant code without graphic shell </p>
+<p> simplest remnant code without graphic shell </p> <br>
 <h3> guessNum.py </h3>
-<p> The game guess the number with count attempts </p>
+<p> The game guess the number with count attempts </p> <br>
 <h3> CountByColor.bas </h3>
-<p> This code count one color in the specified range. For excel. </p>
+<p> This code count one color in the specified range. For excel. </p> <br>
