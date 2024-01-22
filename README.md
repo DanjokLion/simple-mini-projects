@@ -20,3 +20,5 @@
 <p> The game guess the number with count attempts </p> <br>
 <h3> CountByColor.bas </h3>
 <p> This code count one color in the specified range. For excel. </p> <br>
+<h3> wifi-check.py </h3>
+<p> This code will check all visible and ever conneted wifi to device and push this data in the console</p>
