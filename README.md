@@ -1,7 +1,7 @@
 # simple-mini-projects
 
 <h3> Calc.py </h3><br>
-<p> Simple UI for calc, and basic operations </p><br>
+<p> Simple UI for calc, and basic operations </p>
 <h3> pandasExcel.py </h3>
 <p> This script merge two excel tables, peak one Product id from new table and find this product id in DataFrame master. if SKU code in df_anal == SKU code df_master then do nothing, else add this string on new table and set color green </p><br>
 <h3> parserHabr.py </h3>
